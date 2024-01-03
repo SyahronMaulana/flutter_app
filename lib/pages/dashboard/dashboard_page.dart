@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/data/datasources/auth_local_datasource.dart';
+import 'package:flutter_app/pages/auth/auth_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../bloc/logout/logout_bloc.dart';
 import '../../utils/images.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -17,19 +21,69 @@ class _HomePageState extends State<DashboardPage> {
 
   bool singleVendor = false;
 
+  String token = '';
+
   @override
   void initState() {
     super.initState();
 
+    AuthLocalDatasource().getToken().then((value) {
+      setState(() {
+        token = value;
+      });
+    });
+
     _screens = [
       const Center(
-        child: Text('Home'),
+        child: Column(
+          children: [
+            Text('Home'),
+          ],
+        ),
       ),
       const Center(
         child: Text('Orders'),
       ),
-      const Center(
-        child: Text('More'),
+      Center(
+        child: BlocConsumer<LogoutBloc, LogoutState>(
+          listener: (context, state) {
+            state.maybeWhen(
+              orElse: () {},
+              loaded: (message) {
+                AuthLocalDatasource().removeAuthData();
+                Navigator.pushAndRemoveUntil(context,
+                    MaterialPageRoute(builder: (context) {
+                  return const AuthPage();
+                }), (route) => false);
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Logout Succesfully'),
+                  backgroundColor: Colors.blue,
+                ));
+              },
+              error: (message) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(message),
+                  backgroundColor: Colors.red,
+                ));
+              },
+            );
+          },
+          builder: (context, state) {
+            return state.maybeWhen(
+              orElse: () {
+                return ElevatedButton(
+                  onPressed: () {
+                    context.read<LogoutBloc>().add(const LogoutEvent.logout());
+                  },
+                  child: const Text('Logout'),
+                );
+              },
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          },
+        ),
       ),
     ];
   }
@@ -37,6 +91,9 @@ class _HomePageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(token),
+      ),
       key: _scaffoldKey,
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Theme.of(context).primaryColor,

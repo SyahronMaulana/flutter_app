@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bloc/register/register_bloc.dart';
+import 'package:flutter_app/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_app/data/models/request/register_request_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -144,7 +145,8 @@ class SignUpWidgetState extends State<SignUpWidget> {
                     SnackBar(content: Text(message)),
                   );
                 },
-                loaded: (data) {
+                loaded: (data) async {
+                  await AuthLocalDatasource().saveAuthData(data);
                   Navigator.pushAndRemoveUntil(context,
                       MaterialPageRoute(builder: (context) {
                     return DashboardPage();
