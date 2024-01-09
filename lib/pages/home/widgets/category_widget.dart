@@ -7,6 +7,7 @@ import 'category_item_widget.dart';
 class CategoryWidget extends StatelessWidget {
   const CategoryWidget({
     Key? key,
+    required bool isHomePage,
   }) : super(key: key);
 
   @override
