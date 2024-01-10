@@ -3,6 +3,7 @@ import 'package:flutter_app/bloc/categories/categories_bloc.dart';
 import 'package:flutter_app/bloc/checkout/checkout_bloc.dart';
 import 'package:flutter_app/bloc/login/login_bloc.dart';
 import 'package:flutter_app/bloc/logout/logout_bloc.dart';
+import 'package:flutter_app/bloc/order/order_bloc.dart';
 import 'package:flutter_app/bloc/products/products_bloc.dart';
 import 'package:flutter_app/data/datasources/auth_local_datasource.dart';
 import 'package:flutter_app/pages/auth/auth_page.dart';
@@ -41,6 +42,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => CheckoutBloc(),
+        ),
+        BlocProvider(
+          create: (context) => OrderBloc(),
         ),
       ],
       child: MaterialApp(
